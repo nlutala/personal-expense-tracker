@@ -11,9 +11,9 @@ class BudgetRepository:
         self.month = month
         self.year = year
         self.db_path = db_path
-        self._create_budget_table(self.month, self.year)
+        self._create_budget_table()
 
-    def _create_budget_table(self, month: str, year: int):
+    def _create_budget_table(self):
         """
         Create the budget table if it doesn't exist.
         """
@@ -25,7 +25,7 @@ class BudgetRepository:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     month VARCHAR(9) NOT NULL,
                     year INTEGER NOT NULL,
-                    budget INTEGER NOT NULL,
+                    current_budget INTEGER NOT NULL,
                     expenditure INTEGER NOT NULL,
                     remaining INTEGER NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -45,11 +45,12 @@ class BudgetRepository:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT budget FROM budget
+                SELECT current_budget FROM budget
                 WHERE month = ? AND year = ?
             """,
                 (month, year),
             )
+            conn.commit()
             result = cursor.fetchone()
             return result[0] if result else 0
 
@@ -69,6 +70,7 @@ class BudgetRepository:
             """,
                 (month, year),
             )
+            conn.commit()
             result = cursor.fetchone()
             return result[0] if result else 0
 
@@ -90,18 +92,28 @@ class BudgetRepository:
             """,
                 (month, year),
             )
+            conn.commit()
             result = cursor.fetchone()
             return result[0] if result else 0
 
-    # def update_budget(self, month: str, year: int, budget: float):
-    #     """
-    #     Update the budget for a specific month and year.
-    #     """
-    #     with self.connection:
-    #         cursor = self.connection.cursor()
-    #         cursor.execute('''
-    #             UPDATE budget
-    #             SET budget = ?
-    #             WHERE month = ? AND year = ?
-    #         ''', (budget, month, year))
-    #         self.connection.commit()
+    def update_budget(self, month: str, year: int, new_budget: int):
+        """
+        Update the budget for a specific month and year.
+        :param month: Month to update the budget for.
+        :param year: Year to update the budget for.
+        :param budget: New budget amount.
+        """
+        expenditure = self.get_expenditure(month, year)
+        remaining = new_budget - expenditure
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE budget
+                SET current_budget = ?, remaining = ?
+                WHERE month = ? AND year = ?
+            """,
+                (new_budget, remaining, month, year),
+            )
+            conn.commit()

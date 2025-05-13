@@ -54,19 +54,20 @@ def read_root():
     }
 
 
-@app.put("/budget/{new_budget}")
+@app.put("/budget")
 def change_budget(new_budget: int):
     """
     Endpoint to change the current budget.
     """
-    # TODO: Add validation to check if the new budget is a positive integer
-    # TODO: Get this working and incorporate it into the root endpoint
     budget_repo.update_budget(
         month=datetime.now().strftime("%B"),
         year=datetime.now().year,
         budget=new_budget,
     )
-    return {"current_budget": new_budget}
+    return {"current_budget": budget_repo.get_budget(
+        month=datetime.now().strftime("%B"),
+        year=datetime.now().year,
+    )}
 
 
 # TODO: Add a new category... Will revisit this later
