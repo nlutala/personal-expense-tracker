@@ -11,6 +11,7 @@ budget_repo = BudgetRepository(
     year=datetime.now().year,
 )
 
+
 @app.get("/")
 def read_root():
     """
@@ -30,15 +31,15 @@ def read_root():
         "author": "www.github.com/nlutala",
         "docs": "http://127.0.0.1:8000/docs",
         "current_date": str(datetime.now()),
-        "current_budget": budget_repo.get_budget(  # TODO: Fix this to get the current budget)
+        "current_budget": budget_repo.get_budget(
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
         ),
-        "current_expenditure": budget_repo.get_expenditure(  # TODO: Fix this to get the current expenditure)
+        "current_expenditure": budget_repo.get_expenditure(
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
         ),
-        "current_remaining": budget_repo.get_remaining(  # TODO: Fix this to get the current remaining)
+        "current_remaining": budget_repo.get_remaining(
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
         ),
