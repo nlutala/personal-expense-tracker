@@ -7,13 +7,13 @@ from fastapi import FastAPI
 app = FastAPI()
 
 budget_repo = BudgetRepository(
-    db_path="budget.db",
+    db_path="databases/budget.db",
     month=datetime.now().strftime("%B"),
     year=datetime.now().year,
 )
 
 categories_repo = CategoryRepository(
-    db_path="categories.db",
+    db_path="databases/categories.db",
     month=datetime.now().strftime("%B"),
     year=datetime.now().year,
 )
