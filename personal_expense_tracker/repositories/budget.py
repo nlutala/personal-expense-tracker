@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Dict, Any
+# from typing import List, Dict, Any
 
 
 class BudgetRepository:
@@ -11,11 +11,13 @@ class BudgetRepository:
         self.month = month
         self.year = year
         self.db_path = db_path
-        self._create_budget_table()
+        self._create_budget_table(month, year)
 
-    def _create_budget_table(self):
+    def _create_budget_table(self, month: str, year: int):
         """
         Create the budget table if it doesn't exist.
+        :param month: Month to create the budget for.
+        :param year: Year to create the budget for.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -28,9 +30,17 @@ class BudgetRepository:
                     current_budget INTEGER NOT NULL,
                     expenditure INTEGER NOT NULL,
                     remaining INTEGER NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """
+            )
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO budget (month, year, current_budget, expenditure, remaining)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (month, year, 0, 0, 0),
             )
             conn.commit()
 
@@ -111,7 +121,7 @@ class BudgetRepository:
             cursor.execute(
                 """
                 UPDATE budget
-                SET current_budget = ?, remaining = ?
+                SET current_budget = ?, remaining = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE month = ? AND year = ?
             """,
                 (new_budget, remaining, month, year),

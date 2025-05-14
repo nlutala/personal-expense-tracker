@@ -1,12 +1,19 @@
-from typing import Union
+# from typing import Union
 from datetime import datetime
-from repositories.budget import BudgetRepository
+from repositories import BudgetRepository, CategoryRepository
 
 from fastapi import FastAPI
 
 app = FastAPI()
+
 budget_repo = BudgetRepository(
     db_path="budget.db",
+    month=datetime.now().strftime("%B"),
+    year=datetime.now().year,
+)
+
+categories_repo = CategoryRepository(
+    db_path="categories.db",
     month=datetime.now().strftime("%B"),
     year=datetime.now().year,
 )
@@ -43,14 +50,13 @@ def read_root():
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
         ),
-        "categories": [
-            # "housing",
-            # "utilities",
-            # "subscriptions",
-            # "groceries",
-            # "entertainment",
-            # "transportation",
-        ],
+        "categories": categories_repo.get_categories()
+        # "housing",
+        # "utilities",
+        # "subscriptions",
+        # "groceries",
+        # "entertainment",
+        # "transportation"
     }
 
 
@@ -58,19 +64,30 @@ def read_root():
 def change_budget(new_budget: int):
     """
     Endpoint to change the current budget.
+    :param new_budget: The new budget amount.
+    :return: The updated budget.
     """
     budget_repo.update_budget(
         month=datetime.now().strftime("%B"),
         year=datetime.now().year,
-        budget=new_budget,
+        new_budget=new_budget,
     )
-    return {"current_budget": budget_repo.get_budget(
-        month=datetime.now().strftime("%B"),
-        year=datetime.now().year,
-    )}
+    return {
+        "current_budget": budget_repo.get_budget(
+            month=datetime.now().strftime("%B"),
+            year=datetime.now().year,
+        )
+    }
 
 
-# TODO: Add a new category... Will revisit this later
-# @app.get("/add_category/{category_name}")
-# def read_item(item_id: int, q: Union[str, None] = None):
-#     return {"item_id": item_id, "q": q}
+@app.post("/categories")
+def add_category(new_category: str, current_budget: int) -> dict | None:
+    """
+    Endpoint to add a new category.
+    :param new_category: The new category to add.
+    :param current_budget: The budget for the new category.
+    :return: The updated category.
+    """
+    # Check if the category already exists (if it does, do nothing)
+    # Check if the budget of the category is less than the current budget
+    # Create the new category and add it to the category table
