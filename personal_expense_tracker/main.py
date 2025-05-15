@@ -63,17 +63,15 @@ def get_categories():
     Endpoint to get the list of categories.
     :return: A list of categories.
     """
-    return {
+    default_dict = {
         "description": "A list of categories and budget for the "
         f"current month of {datetime.now().strftime('%B')} "
-        f" {datetime.now().year}. ",
+        f"{datetime.now().year}.",
         "version": "1.0.0",
         "author": "www.github.com/nlutala",
         "docs": "http://127.0.0.1:8000/docs",
         "current_date": str(datetime.now()),
-        "categories": categories_repo.get_category_budget(
-            datetime.now().strftime("%B"), datetime.now().year
-        ),  # TODO: Get the categories from the database. How are you going to display this?
+        "categories": categories_repo.get_list_of_categories(),
         # "housing",
         # "utilities",
         # "subscriptions",
@@ -81,6 +79,26 @@ def get_categories():
         # "entertainment",
         # "transportation"
     }
+
+    categories_and_budget = categories_repo.get_category_budget(
+        month=datetime.now().strftime("%B"),
+        year=datetime.now().year,
+    )
+
+    if categories_and_budget:
+        return {**default_dict, **categories_and_budget}
+
+    return default_dict
+
+
+@app.delete("/categories")
+def remove_category(category_name: str):
+    """
+    TODO
+    Endpoint for removing a category.
+    :return: A message that the category was deleted.
+    """
+    pass
 
 
 @app.put("/budget")
@@ -114,13 +132,11 @@ def add_category(new_category: str, current_budget: int) -> dict | None:
     month, year = datetime.now().strftime("%B"), datetime.now().year
 
     # Check if the category already exists (if it does, do nothing)
-    if categories_repo.get_category(new_category, month, year):
+    if categories_repo.get_category(new_category.lower(), month, year):
         return {"message": "Category already exists."}
 
     # Check if the budget of the category is less than the current budget
-    elif categories_repo.get_category(
-        new_category, month, year
-    ) and current_budget > budget_repo.get_budget(
+    elif current_budget > budget_repo.get_budget(
         month=datetime.now().strftime("%B"),
         year=datetime.now().year,
     ):
@@ -129,7 +145,7 @@ def add_category(new_category: str, current_budget: int) -> dict | None:
     # Create the new category and add it to the category table
     else:
         categories_repo.create_category(
-            category_name=new_category,
+            category_name=new_category.lower(),
             current_budget=current_budget,
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,

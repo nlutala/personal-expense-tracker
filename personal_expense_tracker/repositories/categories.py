@@ -1,6 +1,6 @@
 import sqlite3
 
-# from typing import List, Dict, Any
+from typing import List, Dict, Any
 
 
 class CategoryRepository:
@@ -37,7 +37,7 @@ class CategoryRepository:
             )
             conn.commit()
 
-    def get_list_of_categories(self) -> list[str]:
+    def get_list_of_categories(self) -> List[str]:
         """
         Get the categories of expenditure.
         :return: List of categories.
@@ -46,15 +46,14 @@ class CategoryRepository:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT DISTINCT category_name FROM categories
-                ORDER BY category_name
-            """
+                SELECT category_name FROM categories
+            """,
             )
             conn.commit()
-            result = cursor.fetchone()
-            return list(result) if result else []
+            result = cursor.fetchall()
+            return [result[i][0] for i in range(len(result))] if result else []
 
-    def get_category(self, category_name: str, month: str, year: int) -> dict | None:
+    def get_category(self, category_name: str, month: str, year: int) -> str:
         """
         Get a specific category by name.
         :param category_name: The name of the category to retrieve.
@@ -73,7 +72,7 @@ class CategoryRepository:
             result = cursor.fetchone()
             return result[0] if result else None
 
-    def get_category_budget(self, month: str, year: int) -> list[dict]:
+    def get_category_budget(self, month: str, year: int) -> Dict[str, Dict[str, int]]:
         """
         Get all categories and their budget for a specific month and year.
         :param month: The month to retrieve categories for.
@@ -92,7 +91,17 @@ class CategoryRepository:
             )
             conn.commit()
             result = cursor.fetchall()
-            return [dict(row) for row in result] if result else []
+            category_and_budget = {}
+
+            if result:
+                for row in result:
+                    category_and_budget[row[0]] = {
+                        "current_budget": row[1],
+                        "expenditure": row[2],
+                        "remaining": row[3],
+                    }
+
+            return category_and_budget
 
     def create_category(
         self, category_name: str, current_budget: int, month: str, year: int
