@@ -5,5 +5,5 @@ for storing and retrieving data from the database
 (data access logic).
 """
 
-from repositories.budget import BudgetRepository
-from repositories.categories import CategoryRepository
+from personal_expense_tracker.repositories.budget import BudgetRepository
+from personal_expense_tracker.repositories.categories import CategoryRepository
