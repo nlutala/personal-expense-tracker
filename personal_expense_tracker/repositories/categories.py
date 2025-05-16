@@ -103,6 +103,27 @@ class CategoryRepository:
 
             return category_and_budget
 
+    def get_reserved_budget(self, month: str, year: int) -> int:
+        """
+        Get the remaining amount of money that has not been allocated
+        to a category.
+        :param month: The month to retrieve the budget for.
+        :param year: The year to retrieve budget for.
+        :return: The remaining budget to allocate to a new category.
+        """
+        category_budgets = self.get_category_budget(month, year)
+        reserved_budget = 0
+
+        if category_budgets:
+            for category in category_budgets:
+                reserved_budget += category_budgets.get(category).get(
+                    "current_budget", 0
+                )
+
+        print(reserved_budget)
+
+        return reserved_budget
+
     def create_category(
         self, category_name: str, current_budget: int, month: str, year: int
     ) -> None:

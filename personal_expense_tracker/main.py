@@ -91,16 +91,6 @@ def get_categories():
     return default_dict
 
 
-@app.delete("/categories")
-def remove_category(category_name: str):
-    """
-    TODO
-    Endpoint for removing a category.
-    :return: A message that the category was deleted.
-    """
-    pass
-
-
 @app.put("/budget")
 def change_budget(new_budget: int):
     """
@@ -122,7 +112,7 @@ def change_budget(new_budget: int):
 
 
 @app.post("/categories")
-def add_category(new_category: str, current_budget: int) -> dict | None:
+def add_category(new_category: str, budget: int) -> dict | None:
     """
     Endpoint to add a new category.
     :param new_category: The new category to add.
@@ -130,23 +120,26 @@ def add_category(new_category: str, current_budget: int) -> dict | None:
     :return: The updated category.
     """
     month, year = datetime.now().strftime("%B"), datetime.now().year
+    current_budget = budget_repo.get_budget(
+        datetime.now().strftime("%B"), datetime.now().year
+    )
 
     # Check if the category already exists (if it does, do nothing)
     if categories_repo.get_category(new_category.lower(), month, year):
         return {"message": "Category already exists."}
 
     # Check if the budget of the category is less than the current budget
-    elif current_budget > budget_repo.get_budget(
-        month=datetime.now().strftime("%B"),
-        year=datetime.now().year,
-    ):
-        return {"message": f"Budget for {new_category} is greater than current budget."}
+    elif current_budget - categories_repo.get_reserved_budget(month, year) < 0:
+        return {
+            "message": f"Budget for {new_category} is greater than current "
+            f"budget of {current_budget}."
+        }
 
     # Create the new category and add it to the category table
     else:
         categories_repo.create_category(
             category_name=new_category.lower(),
-            current_budget=current_budget,
+            current_budget=budget,
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
         )
