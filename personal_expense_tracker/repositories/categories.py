@@ -144,3 +144,21 @@ class CategoryRepository:
                 (month, year, category_name, current_budget, 0, current_budget),
             )
             conn.commit()
+
+    def delete_category(self, category_name: str, month: str, year: int) -> None:
+        """
+        Delete a category.
+        :param category_name: The name of the category to delete.
+        :param month: The month for the category.
+        :param year: The year for the category.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                DELETE FROM categories
+                WHERE category_name = ? AND month = ? AND year = ?
+            """,
+                (category_name, month, year),
+            )
+            conn.commit()

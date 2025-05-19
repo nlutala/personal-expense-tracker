@@ -1,7 +1,8 @@
 from datetime import datetime
-from repositories import BudgetRepository, CategoryRepository
 
 from fastapi import FastAPI
+
+from personal_expense_tracker.repositories import BudgetRepository, CategoryRepository
 
 app = FastAPI()
 
@@ -151,3 +152,24 @@ def add_category(new_category: str, budget: int) -> dict | None:
                 year=datetime.now().year,
             ),
         }
+
+
+@app.delete("/categories")
+def remove_category(category: str) -> dict | None:
+    """
+    Endpoint to remove a category.
+    :param category: The category to remove.
+    :return: A message you deleted a category.
+    """
+    month, year = datetime.now().strftime("%B"), datetime.now().year
+
+    # Check if the category already exists (if doesn't, do nothing)
+    if not categories_repo.get_category(category.lower(), month, year):
+        return {"message": "Category does not exist."}
+    else:
+        categories_repo.delete_category(
+            category_name=category.lower(),
+            month=datetime.now().strftime("%B"),
+            year=datetime.now().year,
+        )
+        return {"message": f"Category {category} removed successfully."}
