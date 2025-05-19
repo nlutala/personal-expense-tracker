@@ -1,8 +1,14 @@
+"""
+The API to track and manage your personal expenses.
+"""
+
 from datetime import datetime
 
 from fastapi import FastAPI
 
-from personal_expense_tracker.repositories import BudgetRepository, CategoryRepository
+from personal_expense_tracker.repositories import (
+    BudgetRepository, CategoryRepository
+)
 
 app = FastAPI()
 
@@ -146,7 +152,9 @@ def add_category(new_category: str, budget: int) -> dict | None:
         )
         return {
             "message": f"Category {new_category} added successfully.",
-            "category": categories_repo.get_category(new_category, month, year),
+            "category": categories_repo.get_category(
+                new_category, month, year
+            ),
             "current_budget": budget_repo.get_budget(
                 month=datetime.now().strftime("%B"),
                 year=datetime.now().year,
