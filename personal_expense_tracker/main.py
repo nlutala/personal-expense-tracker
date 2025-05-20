@@ -10,15 +10,17 @@ from personal_expense_tracker.repositories import (
     BudgetRepository, CategoryRepository
 )
 
+from personal_expense_tracker.utils.constants import BUDGET_DB_PATH, CATEGORIES_DB_PATH
+
 app = FastAPI()
 
 budget_repo = BudgetRepository(
-    db_path="databases/budget.db",
+    db_path=BUDGET_DB_PATH,
     month=datetime.now().strftime("%B"),
     year=datetime.now().year,
 )
 
-categories_repo = CategoryRepository(db_path="databases/categories.db")
+categories_repo = CategoryRepository(db_path=CATEGORIES_DB_PATH)
 
 
 @app.get("/")
@@ -26,7 +28,7 @@ def read_root():
     """
     Root endpoint that provides a welcome message and basic information
     about the Personal Expense Tracker API.
-    :return: A dictionary with a welcome message and basic information.
+        return: A dictionary with a welcome message and basic information.
     """
     return {
         "description": "Welcome to the Personal Expense Tracker API. "
@@ -68,7 +70,7 @@ def read_root():
 def get_categories():
     """
     Endpoint to get the list of categories.
-    :return: A list of categories.
+        return: A list of categories.
     """
     default_dict = {
         "description": "A list of categories and budget for the "
@@ -102,8 +104,8 @@ def get_categories():
 def change_budget(new_budget: int):
     """
     Endpoint to change the current budget.
-    :param new_budget: The new budget amount.
-    :return: The updated budget.
+        param new_budget: The new budget amount.
+        return: The updated budget.
     """
     budget_repo.update_budget(
         month=datetime.now().strftime("%B"),
@@ -122,9 +124,9 @@ def change_budget(new_budget: int):
 def add_category(new_category: str, budget: int) -> dict | None:
     """
     Endpoint to add a new category.
-    :param new_category: The new category to add.
-    :param current_budget: The budget for the new category.
-    :return: The updated category.
+        :param new_category: The new category to add.
+        :param current_budget: The budget for the new category.
+        :return: The updated category.
     """
     month, year = datetime.now().strftime("%B"), datetime.now().year
     current_budget = budget_repo.get_budget(
@@ -166,8 +168,8 @@ def add_category(new_category: str, budget: int) -> dict | None:
 def remove_category(category: str) -> dict | None:
     """
     Endpoint to remove a category.
-    :param category: The category to remove.
-    :return: A message you deleted a category.
+        :param category: The category to remove.
+        :return: A message to confirm deletion of a category.
     """
     month, year = datetime.now().strftime("%B"), datetime.now().year
 

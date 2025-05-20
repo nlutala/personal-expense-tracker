@@ -7,7 +7,7 @@ class CategoryRepository:
     def __init__(self, db_path: str):
         """
         Initialize the CategoryRepository with a database path, month, and year.
-        :param db_path: Path to the SQLite database file.
+            :param db_path: Path to the SQLite database file.
         """
         self.db_path = db_path
         self._create_categories_table()
@@ -15,8 +15,8 @@ class CategoryRepository:
     def _create_categories_table(self):
         """
         Create the categories table if it doesn't exist.
-        :param month: Month to create the category for.
-        :param year: Year to create the category for.
+            :param month: Month to create the category for.
+            :param year: Year to create the category for.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -40,7 +40,7 @@ class CategoryRepository:
     def get_list_of_categories(self) -> List[str]:
         """
         Get the categories of expenditure.
-        :return: List of categories.
+            :return: List of categories.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -56,8 +56,8 @@ class CategoryRepository:
     def get_category(self, category_name: str, month: str, year: int) -> str:
         """
         Get a specific category by name.
-        :param category_name: The name of the category to retrieve.
-        :return: The category details or None if not found.
+            :param category_name: The name of the category to retrieve.
+            :return: The category details or None if not found.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -75,9 +75,9 @@ class CategoryRepository:
     def get_category_budget(self, month: str, year: int) -> Dict[str, Dict[str, int]]:
         """
         Get all categories and their budget for a specific month and year.
-        :param month: The month to retrieve categories for.
-        :param year: The year to retrieve categories for.
-        :return: List of categories for the specified month and year.
+            :param month: The month to retrieve categories for.
+            :param year: The year to retrieve categories for.
+            :return: List of categories for the specified month and year.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -107,9 +107,9 @@ class CategoryRepository:
         """
         Get the remaining amount of money that has not been allocated
         to a category.
-        :param month: The month to retrieve the budget for.
-        :param year: The year to retrieve budget for.
-        :return: The remaining budget to allocate to a new category.
+            :param month: The month to retrieve the budget for.
+            :param year: The year to retrieve budget for.
+            :return: The remaining budget to allocate to a new category.
         """
         category_budgets = self.get_category_budget(month, year)
         reserved_budget = 0
@@ -129,10 +129,10 @@ class CategoryRepository:
     ) -> None:
         """
         Create a new category.
-        :param category_name: The name of the category to create.
-        :param current_budget: The budget for the category.
-        :param month: The month for the category.
-        :param year: The year for the category.
+            :param category_name: The name of the category to create.
+            :param current_budget: The budget for the category.
+            :param month: The month for the category.
+            :param year: The year for the category.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -148,9 +148,9 @@ class CategoryRepository:
     def delete_category(self, category_name: str, month: str, year: int) -> None:
         """
         Delete a category.
-        :param category_name: The name of the category to delete.
-        :param month: The month for the category.
-        :param year: The year for the category.
+            :param category_name: The name of the category to delete.
+            :param month: The month for the category.
+            :param year: The year for the category.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
