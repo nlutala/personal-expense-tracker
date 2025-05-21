@@ -107,16 +107,21 @@ def change_budget(new_budget: int):
         param new_budget: The new budget amount.
         return: The updated budget.
     """
-    budget_repo.update_budget(
-        month=datetime.now().strftime("%B"),
-        year=datetime.now().year,
-        new_budget=new_budget,
-    )
-    return {
-        "current_budget": budget_repo.get_budget(
+    if new_budget >= 0:
+        budget_repo.update_budget(
             month=datetime.now().strftime("%B"),
             year=datetime.now().year,
+            new_budget=new_budget,
         )
+        return {
+            "current_budget": budget_repo.get_budget(
+                month=datetime.now().strftime("%B"),
+                year=datetime.now().year,
+            )
+        }
+ 
+    return {
+        "message": "Monthly budget cannot be less than zero."
     }
 
 
