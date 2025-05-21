@@ -2,9 +2,6 @@
 Tests for all the GET HTTP methods.
 """
 
-from datetime import datetime
-import os
-
 from fastapi.testclient import TestClient
 
 from personal_expense_tracker.main import app
