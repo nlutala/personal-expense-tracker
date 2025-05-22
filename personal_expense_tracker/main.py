@@ -6,9 +6,7 @@ from datetime import datetime
 
 from fastapi import FastAPI
 
-from personal_expense_tracker.repositories import (
-    BudgetRepository, CategoryRepository
-)
+from personal_expense_tracker.repositories import BudgetRepository, CategoryRepository
 
 from personal_expense_tracker.utils.constants import BUDGET_DB_PATH, CATEGORIES_DB_PATH
 
@@ -119,10 +117,8 @@ def change_budget(new_budget: int):
                 year=datetime.now().year,
             )
         }
- 
-    return {
-        "message": "Monthly budget cannot be less than zero."
-    }
+
+    return {"message": "Monthly budget cannot be less than zero."}
 
 
 @app.post("/categories")
@@ -143,7 +139,7 @@ def add_category(new_category: str, budget: int) -> dict | None:
         return {"message": "Category already exists."}
 
     # Check if the budget of the category is less than the current budget
-    elif current_budget - categories_repo.get_reserved_budget(month, year) < 0:
+    elif current_budget - categories_repo.get_reserved_budget(month, year) < budget:
         return {
             "message": f"Budget for {new_category} is greater than current "
             f"budget of {current_budget}."
@@ -159,9 +155,7 @@ def add_category(new_category: str, budget: int) -> dict | None:
         )
         return {
             "message": f"Category {new_category} added successfully.",
-            "category": categories_repo.get_category(
-                new_category, month, year
-            ),
+            "category": categories_repo.get_category(new_category, month, year),
             "current_budget": budget_repo.get_budget(
                 month=datetime.now().strftime("%B"),
                 year=datetime.now().year,
