@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "personal_expense_tracker/tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
